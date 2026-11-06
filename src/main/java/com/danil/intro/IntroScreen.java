@@ -42,85 +42,62 @@ protected void init() {
     IntroAnimMod.playSound();
 }
 
-@Override
-public void render(
-        GuiGraphics graphics,
-        int mouseX,
-        int mouseY,
-        float partialTick
-) {
+    @Override
+    public void render(
+            GuiGraphics graphics,
+            int mouseX,
+            int mouseY,
+            float partialTick
+    ) {
+        long elapsed = System.currentTimeMillis() - startedAt;
+        int frame = (int) (elapsed / FRAME_TIME_MS) + 1;
 
-    long elapsed = System.currentTimeMillis() - startedAt;
-
-    int frame = (int) (elapsed / FRAME_TIME_MS) + 1;
-
-    // Если заставка закончилась
-    if (frame > FRAME_COUNT) {
-
-        releaseCurrentTexture();
-
-        Minecraft.getInstance().setScreen(
-                new net.minecraft.client.gui.screens.TitleScreen()
-        );
-
-        return;
-    }
-
-    ResourceLocation texture = new ResourceLocation(
-            IntroAnimMod.MODID,
-            "textures/intro/frame_" +
-                    String.format("%04d", frame) 
-                    
-    );
-
-    TextureManager textureManager =
-            Minecraft.getInstance().getTextureManager();
-
-    // Загружаем только текущий кадр
-    if (!texture.equals(loadedFrame)) {
-
-        textureManager.getTexture(texture);
-
-        // Освобождаем предыдущий кадр
-        if (loadedFrame != null) {
-            textureManager.release(loadedFrame);
+        if (frame > FRAME_COUNT) {
+            releaseCurrentTexture();
+            Minecraft.getInstance().setScreen(
+                    new net.minecraft.client.gui.screens.TitleScreen()
+            );
+            return;
         }
 
-        loadedFrame = texture;
+        ResourceLocation texture = new ResourceLocation(
+                IntroAnimMod.MODID,
+                "textures/intro/frame_" + String.format("%04d", frame)
+        );
+
+        TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+        if (!texture.equals(loadedFrame)) {
+            textureManager.getTexture(texture);
+            if (loadedFrame != null) {
+                textureManager.release(loadedFrame);
+            }
+            loadedFrame = texture;
+        }
+
+        // Заливаем фон черным
+        graphics.fill(0, 0, this.width, this.height, 0xFF000000);
+
+        // Вычисляем пропорции 16:9
+        int drawW = this.width;
+        int drawH = drawW * FRAME_HEIGHT / FRAME_WIDTH;
+
+        if (drawH > this.height) {
+            drawH = this.height;
+            drawW = drawH * FRAME_WIDTH / FRAME_HEIGHT;
+        }
+
+        int x = (this.width - drawW) / 2;
+        int y = (this.height - drawH) / 2;
+
+        // Самая важная часть: 9 аргументов для правильной отрисовки
+        graphics.blit(
+                texture,
+                x, y,
+                drawW, drawH,
+                0, 0,
+                FRAME_WIDTH, FRAME_HEIGHT
+        );
     }
-
-    graphics.fill(
-            0,
-            0,
-            this.width,
-            this.height,
-            0xFF000000
-    );
-
-    // Сохраняем пропорции 16:9
-    int drawW = this.width;
-
-    int drawH = drawW * FRAME_HEIGHT / FRAME_WIDTH;
-
-    if (drawH > this.height) {
-
-        drawH = this.height;
-
-        drawW = drawH * FRAME_WIDTH / FRAME_HEIGHT;
-    }
-
-    int x = (this.width - drawW) / 2;
-    int y = (this.height - drawH) / 2;
-
-   graphics.blit(
-            texture,
-            x, y,
-            drawW, drawH,
-            0, 0,
-            FRAME_WIDTH, FRAME_HEIGHT,
-            FRAME_WIDTH, FRAME_HEIGHT
-    );
-}
 
 private void releaseCurrentTexture() {
 
