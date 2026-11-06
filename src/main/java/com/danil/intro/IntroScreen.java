@@ -29,7 +29,7 @@ protected void init() {
 
     startedAt = System.currentTimeMillis();
 
-    // Останавливаем музыку Minecraft
+
     Minecraft mc = Minecraft.getInstance();
 
     mc.getMusicManager().stopPlaying();
@@ -38,7 +38,7 @@ protected void init() {
             net.minecraft.sounds.SoundSource.MUSIC
     );
 
-    // Запускаем музыку заставки
+  
     IntroAnimMod.playSound();
 }
 
@@ -74,10 +74,8 @@ protected void init() {
             loadedFrame = texture;
         }
 
-        // Заливаем фон черным
         graphics.fill(0, 0, this.width, this.height, 0xFF000000);
 
-        // Вычисляем пропорции 16:9
         int drawW = this.width;
         int drawH = drawW * FRAME_HEIGHT / FRAME_WIDTH;
 
@@ -89,12 +87,13 @@ protected void init() {
         int x = (this.width - drawW) / 2;
         int y = (this.height - drawH) / 2;
 
-        // Самая важная часть: 9 аргументов для правильной отрисовки
+
         graphics.blit(
                 texture,
-                x, y,
+                x, y, 
                 drawW, drawH,
-                0, 0,
+                0, 0, 
+                FRAME_WIDTH, FRAME_HEIGHT,
                 FRAME_WIDTH, FRAME_HEIGHT
         );
     }
