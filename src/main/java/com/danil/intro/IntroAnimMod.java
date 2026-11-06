@@ -16,37 +16,67 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 @Mod(IntroAnimMod.MODID)
-@Mod.EventBusSubscriber(modid = IntroAnimMod.MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(
+modid = IntroAnimMod.MODID,
+value = Dist.CLIENT,
+bus = Mod.EventBusSubscriber.Bus.FORGE
+)
 public class IntroAnimMod {
-    public static final String MODID = "introanim";
-    private static boolean played = false;
 
-    public static final DeferredRegister<SoundEvent> SOUNDS =
-            DeferredRegister.create(Registries.SOUND_EVENT, MODID);
+public static final String MODID = "introanim";
 
-    public static final RegistryObject<SoundEvent> INTRO_SOUND = SOUNDS.register(
-            "intro",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, "intro"))
+private static boolean played = false;
+
+public static final DeferredRegister<SoundEvent> SOUNDS =
+        DeferredRegister.create(Registries.SOUND_EVENT, MODID);
+
+public static final RegistryObject<SoundEvent> INTRO_SOUND =
+        SOUNDS.register(
+                "intro",
+                () -> SoundEvent.createVariableRangeEvent(
+                        new ResourceLocation(MODID, "intro")
+                )
+        );
+
+public IntroAnimMod() {
+    SOUNDS.register(
+            FMLJavaModLoadingContext.get().getModEventBus()
     );
-
-    public IntroAnimMod() {
-        SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
-    }
+}
 
 @SubscribeEvent
 public static void onScreenOpening(ScreenEvent.Opening event) {
+
     if (!played && event.getNewScreen() instanceof TitleScreen) {
+
         played = true;
+
+        Minecraft mc = Minecraft.getInstance();
+
+        // Останавливаем стандартную музыку Minecraft
+        mc.getMusicManager().stopPlaying();
+        mc.getSoundManager().stop(null, SoundSource.MUSIC);
+
+        // Вместо главного меню запускаем заставку
         event.setNewScreen(new IntroScreen());
     }
 }
 
 public static void playSound() {
-    Minecraft.getInstance().getSoundManager().play(
-        SimpleSoundInstance.forUI(
-            INTRO_SOUND.get(),
-            1.0F
-        )
+
+    Minecraft mc = Minecraft.getInstance();
+
+    // На всякий случай повторно останавливаем музыку
+    mc.getMusicManager().stopPlaying();
+    mc.getSoundManager().stop(null, SoundSource.MUSIC);
+
+    // Запускаем нашу музыку
+    mc.getSoundManager().play(
+            SimpleSoundInstance.forUI(
+                    INTRO_SOUND.get(),
+                    1.0F
+            )
     );
 }
+
 }
