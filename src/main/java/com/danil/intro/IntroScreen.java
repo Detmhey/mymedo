@@ -69,8 +69,8 @@ public void render(
     ResourceLocation texture = new ResourceLocation(
             IntroAnimMod.MODID,
             "textures/intro/frame_" +
-                    String.format("%04d", frame) +
-                    ".png"
+                    String.format("%04d", frame) 
+                    
     );
 
     TextureManager textureManager =
