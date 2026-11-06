@@ -7,90 +7,147 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-/** Full HD 30 FPS intro screen. Textures are released as frames change. */
 public class IntroScreen extends Screen {
-    private static final int FRAME_COUNT = 2231;
-    private static final long FRAME_TIME_MS = 33L;
-    private static final int FRAME_WIDTH = 1920;
-    private static final int FRAME_HEIGHT = 1080;
 
-    private long startedAt;
-    private boolean soundStarted;
-    private ResourceLocation loadedFrame;
+private static final int FRAME_COUNT = 2231;
 
-    public IntroScreen() {
-        super(Component.empty());
-    }
+private static final long FRAME_TIME_MS = 33L;
 
-    @Override
-    protected void init() {
-        startedAt = System.currentTimeMillis();
-        if (!soundStarted) {
-            soundStarted = true;
-            IntroAnimMod.playSound();
-        }
-    }
+private static final int FRAME_WIDTH = 1920;
+private static final int FRAME_HEIGHT = 1080;
 
-    @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        long elapsed = System.currentTimeMillis() - startedAt;
-        int frame = (int) (elapsed / FRAME_TIME_MS) + 1;
+private long startedAt;
 
-        if (frame > FRAME_COUNT) {
-            releaseCurrentTexture();
-            Minecraft.getInstance().setScreen(new net.minecraft.client.gui.screens.TitleScreen());
-            return;
-        }
+private ResourceLocation loadedFrame;
 
-        ResourceLocation texture = new ResourceLocation(
-                IntroAnimMod.MODID,
-                "textures/intro/frame_" + String.format("%04d", frame) + ".png"
+public IntroScreen() {
+    super(Component.empty());
+}
+
+@Override
+protected void init() {
+
+    startedAt = System.currentTimeMillis();
+
+    // Останавливаем музыку Minecraft
+    Minecraft mc = Minecraft.getInstance();
+
+    mc.getMusicManager().stopPlaying();
+    mc.getSoundManager().stop(
+            null,
+            net.minecraft.sounds.SoundSource.MUSIC
+    );
+
+    // Запускаем музыку заставки
+    IntroAnimMod.playSound();
+}
+
+@Override
+public void render(
+        GuiGraphics graphics,
+        int mouseX,
+        int mouseY,
+        float partialTick
+) {
+
+    long elapsed = System.currentTimeMillis() - startedAt;
+
+    int frame = (int) (elapsed / FRAME_TIME_MS) + 1;
+
+    // Если заставка закончилась
+    if (frame > FRAME_COUNT) {
+
+        releaseCurrentTexture();
+
+        Minecraft.getInstance().setScreen(
+                new net.minecraft.client.gui.screens.TitleScreen()
         );
 
-        TextureManager textureManager = Minecraft.getInstance().getTextureManager();
-        if (!texture.equals(loadedFrame)) {
-            // Lazy loading: request only the frame currently being displayed.
-            textureManager.getTexture(texture);
-
-            // Remove the previous frame from TextureManager so thousands of
-            // Full HD textures are not kept in the GPU/texture cache.
-            if (loadedFrame != null) {
-                textureManager.release(loadedFrame);
-            }
-            loadedFrame = texture;
-        }
-
-        graphics.fill(0, 0, this.width, this.height, 0xFF000000);
-
-        // Preserve 16:9 at any window size.
-        int drawW = this.width;
-        int drawH = drawW * FRAME_HEIGHT / FRAME_WIDTH;
-        if (drawH > this.height) {
-            drawH = this.height;
-            drawW = drawH * FRAME_WIDTH / FRAME_HEIGHT;
-        }
-
-        int x = (this.width - drawW) / 2;
-        int y = (this.height - drawH) / 2;
-
-        graphics.blit(texture, x, y, 0, 0, drawW, drawH, FRAME_WIDTH, FRAME_HEIGHT);
+        return;
     }
 
-    private void releaseCurrentTexture() {
+    ResourceLocation texture = new ResourceLocation(
+            IntroAnimMod.MODID,
+            "textures/intro/frame_" +
+                    String.format("%04d", frame) +
+                    ".png"
+    );
+
+    TextureManager textureManager =
+            Minecraft.getInstance().getTextureManager();
+
+    // Загружаем только текущий кадр
+    if (!texture.equals(loadedFrame)) {
+
+        textureManager.getTexture(texture);
+
+        // Освобождаем предыдущий кадр
         if (loadedFrame != null) {
-            Minecraft.getInstance().getTextureManager().release(loadedFrame);
-            loadedFrame = null;
+            textureManager.release(loadedFrame);
         }
+
+        loadedFrame = texture;
     }
 
-    @Override
-    public void removed() {
-        releaseCurrentTexture();
-        super.removed();
+    graphics.fill(
+            0,
+            0,
+            this.width,
+            this.height,
+            0xFF000000
+    );
+
+    // Сохраняем пропорции 16:9
+    int drawW = this.width;
+
+    int drawH = drawW * FRAME_HEIGHT / FRAME_WIDTH;
+
+    if (drawH > this.height) {
+
+        drawH = this.height;
+
+        drawW = drawH * FRAME_WIDTH / FRAME_HEIGHT;
     }
 
-    @Override
-    public boolean shouldCloseOnEsc() {
-        return false;
+    int x = (this.width - drawW) / 2;
+    int y = (this.height - drawH) / 2;
+
+    graphics.blit(
+            texture,
+            x,
+            y,
+            0,
+            0,
+            drawW,
+            drawH,
+            FRAME_WIDTH,
+            FRAME_HEIGHT
+    );
+}
+
+private void releaseCurrentTexture() {
+
+    if (loadedFrame != null) {
+
+        Minecraft.getInstance()
+                .getTextureManager()
+                .release(loadedFrame);
+
+        loadedFrame = null;
     }
+}
+
+@Override
+public void removed() {
+
+    releaseCurrentTexture();
+
+    super.removed();
+}
+
+@Override
+public boolean shouldCloseOnEsc() {
+    return false;
+}
+
 }
