@@ -39,12 +39,13 @@ public static void onScreenOpening(ScreenEvent.Opening event) {
         played = true;
         event.setNewScreen(new IntroScreen());
 
-        Minecraft.getInstance().getSoundManager().play(
-            SimpleSoundInstance.forUI(
-                INTRO_SOUND.get(),
-                1.0F
-            )
-        );
-    }
+public static void playSound() {
+    Minecraft.getInstance().getSoundManager().play(
+        SimpleSoundInstance.forUI(
+            INTRO_SOUND.get(),
+            1.0F
+        )
+    );
+}
 }
 }
