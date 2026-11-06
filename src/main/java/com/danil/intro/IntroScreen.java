@@ -42,7 +42,7 @@ protected void init() {
     IntroAnimMod.playSound();
 }
 
-    @Override
+       @Override
     public void render(
             GuiGraphics graphics,
             int mouseX,
@@ -59,6 +59,7 @@ protected void init() {
             );
             return;
         }
+
 
         ResourceLocation texture = new ResourceLocation(
                 IntroAnimMod.MODID,
@@ -90,9 +91,9 @@ protected void init() {
 
         graphics.blit(
                 texture,
-                x, y, 
+                x, y,
                 drawW, drawH,
-                0, 0, 
+                0, 0,
                 FRAME_WIDTH, FRAME_HEIGHT,
                 FRAME_WIDTH, FRAME_HEIGHT
         );
