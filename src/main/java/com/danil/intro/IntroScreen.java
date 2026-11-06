@@ -112,16 +112,13 @@ public void render(
     int x = (this.width - drawW) / 2;
     int y = (this.height - drawH) / 2;
 
-    graphics.blit(
+   graphics.blit(
             texture,
-            x,
-            y,
-            0,
-            0,
-            drawW,
-            drawH,
-            FRAME_WIDTH,
-            FRAME_HEIGHT
+            x, y,
+            drawW, drawH,
+            0, 0,
+            FRAME_WIDTH, FRAME_HEIGHT,
+            FRAME_WIDTH, FRAME_HEIGHT
     );
 }
 
