@@ -33,23 +33,17 @@ public class IntroAnimMod {
         SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
 
-    @SubscribeEvent
-    public static void onScreenOpening(ScreenEvent.Opening event) {
-        if (!played && event.getNewScreen() instanceof TitleScreen) {
-            played = true;
-            event.setNewScreen(new IntroScreen());
-        }
-    }
+@SubscribeEvent
+public static void onScreenOpening(ScreenEvent.Opening event) {
+    if (!played && event.getNewScreen() instanceof TitleScreen) {
+        played = true;
+        event.setNewScreen(new IntroScreen());
 
-    public static void playSound() {
-        // Uses the registered sound event and the streamed intro.ogg from sounds.json.
         Minecraft.getInstance().getSoundManager().play(
-                SimpleSoundInstance.createUnseeded(
-                        INTRO_SOUND.get(),
-                        SoundSource.MASTER,
-                        1.0F,
-                        1.0F
-                )
+            SimpleSoundInstance.forUI(
+                INTRO_SOUND.get(),
+                1.0F
+            )
         );
     }
 }
