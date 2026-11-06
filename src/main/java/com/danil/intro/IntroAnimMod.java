@@ -47,3 +47,4 @@ public static void onScreenOpening(ScreenEvent.Opening event) {
         );
     }
 }
+}
