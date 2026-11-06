@@ -1,0 +1,11 @@
+{
+  "intro": {
+    "replace": true,
+    "sounds": [
+      {
+        "name": "introanim:intro",
+        "stream": true
+      }
+    ]
+  }
+}
