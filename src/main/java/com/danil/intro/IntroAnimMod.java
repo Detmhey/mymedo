@@ -74,7 +74,7 @@ public static void playSound() {
     mc.getSoundManager().play(
             SimpleSoundInstance.forUI(
                     INTRO_SOUND.get(),
-                    1.0F
+                    3.0F
             )
     );
 }
