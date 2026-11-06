@@ -38,6 +38,8 @@ public static void onScreenOpening(ScreenEvent.Opening event) {
     if (!played && event.getNewScreen() instanceof TitleScreen) {
         played = true;
         event.setNewScreen(new IntroScreen());
+    }
+}
 
 public static void playSound() {
     Minecraft.getInstance().getSoundManager().play(
@@ -46,6 +48,5 @@ public static void playSound() {
             1.0F
         )
     );
-}
 }
 }
