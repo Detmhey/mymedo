@@ -42,7 +42,7 @@ protected void init() {
     IntroAnimMod.playSound();
 }
 
-       @Override
+           @Override
     public void render(
             GuiGraphics graphics,
             int mouseX,
@@ -60,7 +60,7 @@ protected void init() {
             return;
         }
 
-
+        // ГЛАВНОЕ: никакого .png!
         ResourceLocation texture = new ResourceLocation(
                 IntroAnimMod.MODID,
                 "textures/intro/frame_" + String.format("%04d", frame)
@@ -88,7 +88,7 @@ protected void init() {
         int x = (this.width - drawW) / 2;
         int y = (this.height - drawH) / 2;
 
-
+        // Отрисовка на весь экран (10 аргументов)
         graphics.blit(
                 texture,
                 x, y,
@@ -98,19 +98,6 @@ protected void init() {
                 FRAME_WIDTH, FRAME_HEIGHT
         );
     }
-
-private void releaseCurrentTexture() {
-
-    if (loadedFrame != null) {
-
-        Minecraft.getInstance()
-                .getTextureManager()
-                .release(loadedFrame);
-
-        loadedFrame = null;
-    }
-}
-
 @Override
 public void removed() {
 
