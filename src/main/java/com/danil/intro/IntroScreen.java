@@ -1,5 +1,6 @@
 package com.danil.intro;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -32,14 +33,13 @@ public class IntroScreen extends Screen {
         long elapsed = System.currentTimeMillis() - startedAt;
         int frame = (int) (elapsed / FRAME_TIME_MS) + 1;
 
-        // Если заставка закончилась — переходим в меню
         if (frame > FRAME_COUNT) {
             releaseCurrentTexture();
             Minecraft.getInstance().setScreen(new net.minecraft.client.gui.screens.TitleScreen());
             return;
         }
 
-        // Убрали .png в конце!
+        // Никакого .png в конце!
         ResourceLocation texture = new ResourceLocation(
                 IntroAnimMod.MODID,
                 "textures/intro/frame_" + String.format("%04d", frame)
@@ -47,20 +47,18 @@ public class IntroScreen extends Screen {
 
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
         
-        // Загружаем только текущий кадр
         if (!texture.equals(loadedFrame)) {
             textureManager.getTexture(texture);
-            
-            // Освобождаем память от предыдущего кадра
             if (loadedFrame != null) {
                 textureManager.release(loadedFrame);
             }
             loadedFrame = texture;
         }
 
+        // Заливаем фон черным
         graphics.fill(0, 0, this.width, this.height, 0xFF000000);
 
-        // Сохраняем пропорции 16:9
+        // Считаем пропорции
         int drawW = this.width;
         int drawH = drawW * FRAME_HEIGHT / FRAME_WIDTH;
 
@@ -72,18 +70,11 @@ public class IntroScreen extends Screen {
         int x = (this.width - drawW) / 2;
         int y = (this.height - drawH) / 2;
 
-        // Отрисовка
-        graphics.blit(
-                texture,
-                x, y,
-                drawW, drawH,
-                0, 0,
-                FRAME_WIDTH, FRAME_HEIGHT,
-                FRAME_WIDTH, FRAME_HEIGHT
-        );
+        // ВОТ ТУТ МАГИЯ: привязываем текстуру и рисуем её (5 аргументов)
+        RenderSystem.setShaderTexture(0, texture);
+        graphics.blit(texture, x, y, 0, 0, drawW, drawH, FRAME_WIDTH, FRAME_HEIGHT);
     }
 
-    // ВОТ ЭТОТ МЕТОД МЫ СЛУЧАЙНО УДАЛИЛИ, ВОЗВРАЩАЕМ ЕГО:
     private void releaseCurrentTexture() {
         if (loadedFrame != null) {
             Minecraft.getInstance().getTextureManager().release(loadedFrame);
