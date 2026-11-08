@@ -39,11 +39,11 @@ public class IntroAnimMod {
     public static void playSound() {
         Minecraft mc = Minecraft.getInstance();
         
-        // Останавливаем стандартную музыку меню
+        // Глушим музыку меню
         mc.getMusicManager().stopPlaying();
         mc.getSoundManager().stop(null, SoundSource.MUSIC);
         
-        // Включаем нашу музыку (громкость 2.0F - чуть громче обычного)
-        mc.getSoundManager().play(SimpleSoundInstance.forUI(INTRO_SOUND.get(), 3.0F));
+        // Играем нашу музыку (громкость 2.0F)
+        mc.getSoundManager().play(SimpleSoundInstance.forUI(INTRO_SOUND.get(), 2.0F));
     }
 }
