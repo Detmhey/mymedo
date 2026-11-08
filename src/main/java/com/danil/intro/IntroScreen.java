@@ -46,8 +46,8 @@ public class IntroScreen extends Screen {
             return;
         }
 
-        // ВОТ ОН, ПРАВИЛЬНЫЙ ПУТЬ! (Без textures/intro/frame_)
-        ResourceLocation texture = new ResourceLocation(IntroAnimMod.MODID, String.format("%04d", frame));
+        // ВОТ ОН, ПРАВИЛЬНЫЙ ПУТЬ К ТВОИМ КАРТИНКАМ:
+        ResourceLocation texture = new ResourceLocation(IntroAnimMod.MODID, "textures/intro/frame_" + String.format("%04d", frame));
         
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
         if (!texture.equals(this.loadedFrame)) {
@@ -71,7 +71,7 @@ public class IntroScreen extends Screen {
         int x = (this.width - drawW) / 2;
         int y = (this.height - drawH) / 2;
 
-        // ВОТ ПРАВИЛЬНЫЙ МЕТОД BLIT (с float координатами)
+        // ВОТ ТОТ САМЫЙ РАБОЧИЙ МЕТОД (с float 0.0F)
         graphics.blit(texture, x, y, 0.0F, 0.0F, drawW, drawH, FRAME_WIDTH, FRAME_HEIGHT);
     }
 
