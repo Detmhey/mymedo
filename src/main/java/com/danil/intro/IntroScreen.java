@@ -31,7 +31,7 @@ public class IntroScreen extends Screen {
 
         if (!soundStarted) {
             soundStarted = true;
-            IntroAnimMod.playSound(); // Запускает твою музыку и глушит меню
+            IntroAnimMod.playSound(); 
         }
 
         if (frame > FRAME_COUNT) {
@@ -40,13 +40,15 @@ public class IntroScreen extends Screen {
         }
 
         String number = String.format("%04d", frame);
-        ResourceLocation texture = new ResourceLocation("introanim", "frame_" + number);
+        // ПРАВИЛЬНЫЙ ПУТЬ: textures + frame_ + номер (файлы лежат прямо в textures)
+        ResourceLocation texture = new ResourceLocation("introanim", "textures/frame_" + number);
 
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
         textureManager.getTexture(texture);
 
         graphics.fill(0, 0, this.width, this.height, 0xFF000000);
 
+        // Отрисовка ровно по центру (пропорции 16:9)
         int drawW = this.width;
         int drawH = drawW * 240 / 426;
         if (drawH > this.height) {
@@ -56,6 +58,7 @@ public class IntroScreen extends Screen {
         int x = (this.width - drawW) / 2;
         int y = (this.height - drawH) / 2;
 
+        // ТОТ САМЫЙ РАБОЧИЙ МЕТОД
         RenderSystem.setShaderTexture(0, texture);
         graphics.blit(texture, x, y, 0.0F, 0.0F, drawW, drawH, 426, 240);
     }
