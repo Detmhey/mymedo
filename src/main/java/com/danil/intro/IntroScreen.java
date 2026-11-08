@@ -8,17 +8,9 @@ import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
 
 public class IntroScreen extends Screen {
-    private static final int FRAME_COUNT = 2231;
-    private static final long FRAME_TIME_MS = 33L; // ~30 FPS
-    
-    // ВРЕМЯ ЗАСТАВКИ: 74 секунды (74000 миллисекунд)
-    private static final long INTRO_DURATION_MS = 74000; 
-    
     private long startedAt;
-    private boolean soundStarted;
 
     public IntroScreen() {
         super(Component.empty());
@@ -27,64 +19,36 @@ public class IntroScreen extends Screen {
     @Override
     protected void init() {
         this.startedAt = System.currentTimeMillis();
-        
-        // Глушим музыку Майнкрафта
-        Minecraft mc = Minecraft.getInstance();
-        mc.getMusicManager().stopPlaying();
-        mc.getSoundManager().stop(null, SoundSource.MUSIC);
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         long elapsed = System.currentTimeMillis() - this.startedAt;
-        
-        // ПРОВЕРКА ПО ВРЕМЕНИ: Если прошло 74 секунды — перекидываем в меню
-        if (elapsed > INTRO_DURATION_MS) {
+
+        // 10 секунд для теста
+        if (elapsed > 10000) { 
             Minecraft.getInstance().setScreen(new TitleScreen());
             return;
         }
 
-        int frame = (int) (elapsed / FRAME_TIME_MS) + 1;
-
-        // Запускаем музыку заставки
-        if (!soundStarted) {
-            soundStarted = true;
-            IntroAnimMod.playSound();
-        }
-
-        // Защита: если кадры вдруг закончились раньше времени (хотя у нас 74 сек = 2231 кадр)
-        if (frame > FRAME_COUNT) {
-            frame = FRAME_COUNT; 
-        }
-
-        String number = String.format("%04d", frame);
+        // ТЕСТОВЫЙ ПУТЬ: Если файлы в textures/frame_0001.png, то путь будет "frame_0001"
+        ResourceLocation texture = new ResourceLocation("introanim", "frame_0001");
         
-        // ПРАВИЛЬНЫЙ ПУТЬ (БЕЗ textures/)
-        ResourceLocation texture = new ResourceLocation("introanim", "frame_" + number);
+        // Если файлы лежат в папке intro, то замени строчку выше на:
+        // ResourceLocation texture = new ResourceLocation("introanim", "intro/frame_0001");
 
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
         textureManager.getTexture(texture);
 
-        // Заливаем фон черным
         graphics.fill(0, 0, this.width, this.height, 0xFF000000);
 
-        // Правильные пропорции (по центру)
-        int drawW = this.width;
-        int drawH = drawW * 240 / 426;
-        if (drawH > this.height) {
-            drawH = this.height;
-            drawW = drawH * 426 / 240;
-        }
-        int x = (this.width - drawW) / 2;
-        int y = (this.height - drawH) / 2;
-
-        // Отрисовка
         RenderSystem.setShaderTexture(0, texture);
-        graphics.blit(texture, x, y, 0.0F, 0.0F, drawW, drawH, 426, 240);
+        graphics.blit(texture, 0, 0, 0.0F, 0.0F, this.width, this.height, 426, 240);
     }
 
     @Override
     public boolean shouldCloseOnEsc() {
         return false;
     }
+}
 }
